@@ -1,0 +1,7 @@
+USE loja_artesanatos;
+
+DROP TABLE IF EXISTS Itens_Venda;
+DROP TABLE IF EXISTS Vendas;
+DROP TABLE IF EXISTS Clientes;
+DROP TABLE IF EXISTS Produtos;
+DROP TABLE IF EXISTS Artesoes;
