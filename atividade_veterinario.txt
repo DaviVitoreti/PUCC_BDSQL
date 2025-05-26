@@ -1,0 +1,95 @@
+CREATE TABLE tutores_d (
+id_tutor_d INT PRIMARY KEY,
+nome_d VARCHAR(100),
+telefone_d VARCHAR(15),
+email_d VARCHAR(100),
+endereco_d VARCHAR(150)
+);
+CREATE TABLE animais_d (
+id_animal_d INT PRIMARY KEY,
+nome_d VARCHAR(50),
+especie_d VARCHAR(30),
+raca_d VARCHAR(50),
+idade_d INT,
+peso_d DECIMAL(5,2),
+sexo_d CHAR(1),
+id_tutor_d INT,
+FOREIGN KEY (id_tutor_d) REFERENCES tutores_d(id_tutor_d)
+);
+CREATE TABLE consultas_d (
+id_consulta_d INT PRIMARY KEY,
+id_animal_d INT,
+data_consulta_d DATE,
+procedimento_d VARCHAR(100),
+valor_d DECIMAL(10,2),
+retorno_d BOOLEAN,
+FOREIGN KEY (id_animal_d) REFERENCES animais_d(id_animal_d)
+);
+INSERT INTO tutores_d (id_tutor_d, nome_d, telefone_d, email_d, endereco_d) VALUES
+(1, 'Carlos Mendes', '11999887766', 'carlos@email.com', 'Rua das Flores, 123'),
+(2, 'Ana Lúcia', '11988776655', 'ana@email.com', 'Av. Central, 456'),
+(3, 'Juliana Silva', '11977665544', 'juliana@email.com', 'Rua Verde, 789'),
+(4, 'Roberto Nunes', '11966554433', 'roberto@email.com', 'Travessa Sol, 321'),
+(5, 'Fernanda Dias', '11955443322', 'fernanda@email.com', 'Alameda Azul, 852');
+INSERT INTO animais_d (id_animal_d, nome_d, especie_d, raca_d, idade_d, peso_d, sexo_d, id_tutor_d) VALUES
+(1, 'Toby', 'Cão', 'Labrador', 5, 28.5, 'M', 1),
+(2, 'Mimi', 'Gato', 'Persa', 3, 4.2, 'F', 2),
+(3, 'Rex', 'Cão', 'Vira-lata', 2, 12.7, 'M', 1),
+(4, 'Luna', 'Gato', 'Siamês', 4, 5.1, 'F', 3),
+(5, 'Bolinha', 'Cão', 'Poodle', 10, 7.8, 'F', 4),
+(6, 'Thor', 'Cão', 'Husky', 6, 32.0, 'M', 5),
+(7, 'Nina', 'Gato', 'Maine Coon', 2, 6.9, 'F', 3),
+(8, 'Max', 'Cão', 'Bulldog', 4, 24.0, 'M', 4),
+(9, 'Mel', 'Gato', 'SRD', 1, 3.5, 'F', 5),
+(10, 'Bob', 'Cão', 'Beagle', 3, 10.2, 'M', 2);
+INSERT INTO consultas_d (id_consulta_d, id_animal_d, data_consulta_d, procedimento_d, valor_d, retorno_d) VALUES
+(1, 1, '2024-12-10', 'Vacinação Antirrábica', 80.0, False),
+(2, 2, '2024-12-15', 'Consulta Rotina', 120.0, True),
+(3, 3, '2025-01-10', 'Tratamento de pele', 200.0, False),
+(4, 1, '2025-02-05', 'Retorno Vacinação', 0.0, False),
+(5, 4, '2025-02-20', 'Exame de sangue', 150.0, True),
+(6, 5, '2025-03-01', 'Consulta geriátrica', 160.0, True),
+(7, 6, '2025-03-15', 'Cirurgia ortopédica', 800.0, False),
+(8, 7, '2025-04-02', 'Tratamento vermífugo', 95.0, False),
+(9, 8, '2025-04-10', 'Check-up', 180.0, True),
+(10, 9, '2025-04-20', 'Consulta Rotina', 110.0, False),
+(11, 10, '2025-04-25', 'Vacinação múltipla', 90.0, True),
+(12, 2, '2025-05-05', 'Retorno Consulta', 0.0, False);
+
+-- Resolução
+-- Ex1
+UPDATE animais_d SET peso_d = 33.5 WHERE nome_d = 'Thor';
+
+-- Ex2
+DELETE FROM consultas_d WHERE id_consulta_d = 6;
+
+-- Ex3
+SELECT animais_d.nome_d AS animal, tutores_d.nome_d AS tutor FROM animais_d JOIN tutores_d ON animais_d.id_animal_d = tutores_d.id_tutor_d;
+
+-- Ex4
+SELECT animais_d.nome_d AS nome, animais_d.especie_d AS especie, animais_d.peso_d AS peso FROM animais_d WHERE peso_d > 25;
+
+-- Ex5
+UPDATE consultas_d SET retorno_d = True WHERE id_animal_d = 2;
+
+-- Ex6
+DELETE FROM consultas_d WHERE id_animal_d IN (
+    SELECT id_animal_d FROM animais_d WHERE id_tutor_d = (
+    SELECT id_tutor_d FROM tutores_d WHERE nome_d = 'Juliana Silva'
+    )
+);
+DELETE FROM animais_d WHERE id_tutor_d = (SELECT id_tutor_d FROM tutores_d WHERE nome_d = 'Juliana Silva');
+
+-- Ex7
+SELECT animais_d.nome_d AS nome, consultas_d.valor_d AS valor FROM animais_d JOIN consultas_d ON animais_d.id_animal_d = consultas_d.id_animal_d;
+
+-- Ex8
+SELECT t.nome_d AS nome_tutor, COUNT(a.id_animal_d) AS quantidade_animais FROM tutores_d t 
+JOIN animais_d a ON t.id_tutor_d = a.id_tutor_d
+GROUP BY t.id_tutor_d, t.nome_d;
+
+-- Ex9
+UPDATE animais_d SET idade_d = idade_d + 1 WHERE especie_d = 'Cão';
+
+-- Ex10
+SELECT animais_d.nome_d AS nome, consultas_d.data_consulta_d AS data_consulta FROM animais_d JOIN consultas_d ON animais_d.id_animal_d = consultas_d.id_animal_d WHERE animais_d.especie_d = 'Gato';
